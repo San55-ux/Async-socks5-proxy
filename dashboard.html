@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOCKS5 Proxy Dashboard</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0d19;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-red: #ef4444;
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 1rem;
+        }
+
+        .logo-section h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-section p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        /* Metrics grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .card-title {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .card-value.accent-green { color: var(--accent-green); }
+        .card-value.accent-blue { color: var(--accent-blue); }
+        .card-value.accent-purple { color: var(--accent-purple); }
+
+        .card-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Live Terminal */
+        .terminal-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(5, 7, 16, 0.6);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            min-height: 350px;
+        }
+
+        .terminal-header {
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--card-border);
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .terminal-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+
+        .terminal-title {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+        }
+
+        .terminal-body {
+            flex-grow: 1;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            overflow-y: auto;
+            color: #38bdf8;
+            max-height: 450px;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            border-left: 2px solid rgba(255, 255, 255, 0.05);
+            padding-left: 0.75rem;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .log-time {
+            color: #64748b;
+            margin-right: 0.5rem;
+        }
+
+        .log-info { color: #38bdf8; }
+        .log-warn { color: var(--accent-purple); }
+        .log-err { color: var(--accent-red); }
+        .log-success { color: var(--accent-green); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-section">
+            <h1>SOCKS5 Network Proxy</h1>
+            <p>Built-in Real-time Server Analytics Dashboard</p>
+        </div>
+        <div class="status-badge">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-text">ONLINE</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- Metrics -->
+        <section class="metrics-grid">
+            <div class="card">
+                <p class="card-title">Active Tunnels</p>
+                <p class="card-value accent-green" id="metric-active-conns">0</p>
+                <p class="card-desc">Active client-to-target connections</p>
+            </div>
+            <div class="card">
+                <p class="card-title">Bandwidth (Up / Down)</p>
+                <p class="card-value accent-blue" id="metric-bandwidth">0 B / 0 B</p>
+                <p class="card-desc">Volume of traffic routed through proxy</p>
+            </div>
+            <div class="card">
+                <p class="card-title">Total Handshakes</p>
+                <p class="card-value accent-purple" id="metric-total-conns">0</p>
+                <p class="card-desc">Cumulative sessions established</p>
+            </div>
+            <div class="card">
+                <p class="card-title">Server Uptime</p>
+                <p class="card-value" id="metric-uptime">00:00:00</p>
+                <p class="card-desc">Time elapsed since proxy started</p>
+            </div>
+        </section>
+
+        <!-- Live Console -->
+        <section class="terminal-container">
+            <div class="terminal-header">
+                <div class="terminal-controls">
+                    <span class="terminal-dot dot-red"></span>
+                    <span class="terminal-dot dot-yellow"></span>
+                    <span class="terminal-dot dot-green"></span>
+                </div>
+                <div class="terminal-title">live_session_traffic.log</div>
+                <div style="width: 50px;"></div> <!-- spacer -->
+            </div>
+            <div class="terminal-body" id="terminal-logs">
+                <div class="log-entry">
+                    <span class="log-time">[System]</span>
+                    <span class="log-info">Connecting to local server event stream...</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        Nokia Networking Project Portfolio &bull; Standard RFC 1928 / 1929 Server Implementation
+    </footer>
+
+    <script>
+        const activeConnsEl = document.getElementById("metric-active-conns");
+        const totalConnsEl = document.getElementById("metric-total-conns");
+        const bandwidthEl = document.getElementById("metric-bandwidth");
+        const uptimeEl = document.getElementById("metric-uptime");
+        const terminalEl = document.getElementById("terminal-logs");
+        const statusDot = document.getElementById("status-dot");
+        const statusText = document.getElementById("status-text");
+
+        let startTime = 0;
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatUptime(seconds) {
+            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        function addLog(message, type = "info") {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            
+            const logEntry = document.createElement("div");
+            logEntry.className = "log-entry";
+            
+            const timeSpan = document.createElement("span");
+            timeSpan.className = "log-time";
+            timeSpan.textContent = `[${timeString}]`;
+            
+            const textSpan = document.createElement("span");
+            textSpan.className = type === "success" ? "log-success" : 
+                             type === "warn" ? "log-warn" : 
+                             type === "error" ? "log-err" : "log-info";
+            textSpan.textContent = message;
+            
+            logEntry.appendChild(timeSpan);
+            logEntry.appendChild(textSpan);
+            
+            terminalEl.appendChild(logEntry);
+            
+            // Limit max logs in terminal to keep DOM clean
+            while (terminalEl.childNodes.length > 100) {
+                terminalEl.removeChild(terminalEl.firstChild);
+            }
+            
+            // Scroll to bottom
+            terminalEl.scrollTop = terminalEl.scrollHeight;
+        }
+
+        function updateUptimeTicker() {
+            if (startTime > 0) {
+                const elapsed = (Date.now() / 1000) - startTime;
+                uptimeEl.textContent = formatUptime(elapsed);
+            }
+        }
+        setInterval(updateUptimeTicker, 1000);
+
+        // Start SSE Connection
+        function connectStream() {
+            const source = new EventSource('/events');
+
+            source.onopen = function() {
+                statusDot.style.backgroundColor = "var(--accent-green)";
+                statusDot.style.boxShadow = "0 0 10px var(--accent-green)";
+                statusText.textContent = "ONLINE";
+                addLog("Established real-time event stream.", "success");
+            };
+
+            source.onerror = function(err) {
+                statusDot.style.backgroundColor = "var(--accent-red)";
+                statusDot.style.boxShadow = "0 0 10px var(--accent-red)";
+                statusText.textContent = "OFFLINE";
+                addLog("Lost connection to server event stream. Retrying...", "error");
+            };
+
+            source.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                
+                if (data.event === "initial") {
+                    startTime = data.stats.uptime_start;
+                    activeConnsEl.textContent = data.stats.active_connections;
+                    totalConnsEl.textContent = data.stats.total_connections;
+                    bandwidthEl.textContent = `${formatBytes(data.stats.bytes_sent)} / ${formatBytes(data.stats.bytes_received)}`;
+                } 
+                else if (data.event === "connect_start") {
+                    activeConnsEl.textContent = data.stats.active_connections;
+                    totalConnsEl.textContent = data.stats.total_connections;
+                    addLog(`Client ${data.client} tunneling to ${data.dest}`, "info");
+                } 
+                else if (data.event === "connect_end") {
+                    activeConnsEl.textContent = data.stats.active_connections;
+                    addLog(`Tunnel closed for ${data.client} <--> ${data.dest}`, "warn");
+                } 
+                else if (data.event === "auth_fail") {
+                    addLog(`Warning: Authentication failed from ${data.client} for user '${data.user}'`, "error");
+                }
+                else if (data.event === "traffic") {
+                    bandwidthEl.textContent = `${formatBytes(data.stats.bytes_sent)} / ${formatBytes(data.stats.bytes_received)}`;
+                }
+            };
+        }
+
+        connectStream();
+    </script>
+</body>
+</html>
