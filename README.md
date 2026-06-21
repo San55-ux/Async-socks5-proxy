@@ -11,7 +11,7 @@ It features a built-in, lightweight HTTP and Server-Sent Events (SSE) server tha
 
 ---
 
-## 📸 Web Dashboard Preview
+##  Web Dashboard Preview
 The project serves a modern, dark-mode analytics console at `http://127.0.0.1:8080` showing:
 *   **Active Tunnels Count:** Pulse updates showing live concurrent streams.
 *   **Live Traffic Speedometer:** Cumulative upstream and downstream data counts.
@@ -20,7 +20,7 @@ The project serves a modern, dark-mode analytics console at `http://127.0.0.1:80
 
 ---
 
-## ⚙️ Architecture and Connection Flow
+##  Architecture and Connection Flow
 
 ```
 [Web Browser / Client]
@@ -41,7 +41,7 @@ The project serves a modern, dark-mode analytics console at `http://127.0.0.1:80
 
 ---
 
-## 🛠️ Project Structure
+##  Project Structure
 
 *   `server.py`: Dual-purpose server. Hosts SOCKS5 proxy handling and the HTTP/SSE server.
 *   `protocol.py`: Byte-level protocol parser for SOCKS5 handshakes, auth subnegotiation, and requests.
@@ -51,7 +51,7 @@ The project serves a modern, dark-mode analytics console at `http://127.0.0.1:80
 
 ---
 
-## 🚀 Quick Start Guide
+##  Quick Start Guide
 
 ### Prerequisites
 *   Python 3.7 or newer.
@@ -70,7 +70,7 @@ Outputs:
 
 ### 2. Open the Web Dashboard
 Open your browser and navigate to:
-👉 **[http://127.0.0.1:8080](http://127.0.0.1:8080)**
+ **[http://127.0.0.1:8080](http://127.0.0.1:8080)**
 
 ### 3. Run Traffic and Watch Live Updates
 Open a separate terminal window and run:
@@ -81,7 +81,7 @@ You will immediately see metrics on the dashboard increment and the live console
 
 ---
 
-## 🔐 Enabling Authentication (RFC 1929)
+##  Enabling Authentication (RFC 1929)
 
 To secure the proxy with Username/Password authentication:
 1.  Open `config.py` and modify:
@@ -96,7 +96,7 @@ To secure the proxy with Username/Password authentication:
 
 ---
 
-## 💡 Technical Highlights for Interviews
+##  Technical Highlights for Interviews
 
 If you are presenting this project in a software/network engineering interview (e.g. at Nokia):
 *   **Standards Translation:** Shows capability to translate standardized specs (IETF RFCs) into direct, byte-level packet encoders/decoders.
