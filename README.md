@@ -94,11 +94,3 @@ To secure the proxy with Username/Password authentication:
     python test_client.py --username nokia --password telecom123
     ```
 
----
-
-##  Technical Highlights for Interviews
-
-If you are presenting this project in a software/network engineering interview (e.g. at Nokia):
-*   **Standards Translation:** Shows capability to translate standardized specs (IETF RFCs) into direct, byte-level packet encoders/decoders.
-*   **Non-blocking Event Loops:** Shows deep familiarity with Python's asynchronous model (`asyncio`), using tasks, stream-readers, and socket descriptors to achieve concurrency.
-*   **Zero-Dependency Web Engineering:** The built-in HTTP server and Server-Sent Events engine use raw socket string parsing and data queues, demonstrating how to write clean, lightweight network software for embedded devices without relying on third-party frameworks.
